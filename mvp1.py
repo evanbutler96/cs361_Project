@@ -5,7 +5,7 @@ from tkinter import font
 
 root = Tk()
 root.title("My Fridge")
-root.geometry("325x500")
+root.geometry("600x500")
 
 def show_items():
     conn = sqlite3.connect('my_Fridge.db')
@@ -99,14 +99,83 @@ def delete_items():
     conn.close()
     return
 
+def updater():
+    conn = sqlite3.connect('my_Fridge.db')
+    f = conn.cursor()
+    item_id = delete_by_id.get()
+    f.execute("UPDATE fridge SET food_name = :food_name, f_category = :f_category, f_expiration = :f_expiration WHERE oid = :oid",
+    {
+        'food_name' : food_name_update.get(),
+        'f_category' : f_category_update.get(),
+        'f_expiration' : f_expiration_update.get(),
+        'oid' : item_id
+    })
+    conn.commit()
+    conn.close()
+
+    update.destroy()
+    return
+
+def update_items():
+    global update
+    update = Tk()
+    update.title("Update Item")
+    update.geometry("400x400")
+
+    conn = sqlite3.connect('my_Fridge.db')
+    f = conn.cursor()
+
+    item_ID = delete_by_id.get()
+    f. execute('SELECT * FROM fridge WHERE oid =' + item_ID)
+    update_items = f.fetchall()
+
+    conn.commit()
+    conn.close()
+    global food_name_update
+    global f_category_update
+    global f_expiration_update
+
+    
+    food_name_label_update = Label(update, text="Food")
+    food_name_label_update.grid(row=0,column=0)
+
+    f_category_label_update = Label(update, text="Category")
+    f_category_label_update.grid(row=1,column=0)
+
+    f_expiration_label_update = Label(update, text="Expiration date")
+    f_expiration_label_update.grid(row=2,column=0)
+
+
+    food_name_update = Entry(update, width=30)
+    food_name_update.grid(row = 0, column=1, padx=20)
+
+    # Category Text box
+    f_category_update = Entry(update, width=30)
+    f_category_update.grid(row = 1, column=1, padx=20)
+
+    # Expiration text box
+    f_expiration_update = Entry(update, width=30)
+    f_expiration_update.grid(row = 2, column=1, padx=20)
+    
+    for update_item in update_items:
+        food_name_update.insert(0,update_item[0])
+        f_category_update.insert(0, update_item[1])
+        f_expiration_update.insert(0,update_item[2])
+    
+
+    save_button_update = Button(update, text="Save food to fridge", command=updater)
+    save_button_update.grid(row=6, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
+    return
+
 ########################  Labels  ###################################
 welcome = Label(root, text="Welcome to the Fridge!", font=('times new roman', 20))
-welcome.grid(row = 1, column=1, padx=20, pady=15)
+welcome.grid(row = 1, column=0, padx=20, pady=15)
 
 ask_user = Label(root, text="Please select an option below: ", font=('times new roman', 15))
-ask_user.grid(row=2, column=1)
+ask_user.grid(row=2, column=0)
 
-
+delete_label = Label(root, text="Enter item ID to edit or delete")
+delete_label.grid(row=10, column=0, columnspan=2, pady=10, padx=10, ipadx=102)
 
 
 #########################  BUTTONS  #################################
@@ -116,17 +185,16 @@ fridge_inventory.grid(row=6, column=0, columnspan=2, pady=10, padx=10, ipadx=90)
 add_items = Button(root, text="Add an item", command=add_item)
 add_items.grid(row=8, column=0, columnspan=2, pady=10, padx=10, ipadx=102)
 
+update_item = Button(root, text="Edit an item", command=update_items)
+update_item.grid(row=12, column=1, columnspan=1, pady=5, padx=10, ipadx=70)
 
-
-delete_label = Label(root, text="Delete item by ID")
-delete_label.grid(row=10, column=0, columnspan=2, pady=10, padx=10, ipadx=102)
 
 #########################  Entries  #################################
 delete_by_id = Entry(root, width=5)
 delete_by_id.grid(row=11, column=0, columnspan=2, pady=10, padx=10, ipadx=102)
 
 delete_item = Button(root, text="delete an item", command=delete_items)
-delete_item.grid(row=12, column=0, columnspan=2, pady=10, padx=10, ipadx=102)
+delete_item.grid(row=12, column=0, columnspan=1, pady=10, padx=5, ipadx=102)
 
 
 root.mainloop()
