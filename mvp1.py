@@ -1,17 +1,22 @@
 from tkinter import *
 import sqlite3
-import os
 from tkinter import font
+from tkinter import filedialog
+import microservice
+import os
+from PIL import Image, ImageTk
 
+ms = microservice
 root = Tk()
 root.title("My Fridge")
-root.geometry("600x500")
+root.geometry("550x500")
+target = ""
 
 def show_items():
     conn = sqlite3.connect('my_Fridge.db')
     f = conn.cursor()
 
-    f. execute('SELECT *, oid FROM fridge')
+    f. execute('SELECT *, oid FROM fridge ORDER BY f_expiration ASC'  )
     items = f.fetchall()
 
     list_items = ''
@@ -167,6 +172,27 @@ def update_items():
     save_button_update.grid(row=6, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
     return
 
+def add_photos():
+
+    f= open("ms.txt", mode ="w")
+    f.write("request")
+    f.close()
+
+    return
+'''
+def viewPhotos():
+        for(root_, dirs, files) in os.walk(target):
+            if files:
+                    for file_ in files:
+                        path = os.path.join(target, file_)
+                        image_ = Image.open(path)
+                        n_image = image_.resize((100, 100))
+                        photo = ImageTk.PhotoImage(n_image)
+                        img_label = Label(photoView, image=photo)
+                        img_label.photo = photo
+                        img_label.pack()
+'''
+                    
 ########################  Labels  ###################################
 welcome = Label(root, text="Welcome to the Fridge!", font=('times new roman', 20))
 welcome.grid(row = 1, column=0, padx=20, pady=15)
@@ -187,6 +213,9 @@ add_items.grid(row=8, column=0, columnspan=2, pady=10, padx=10, ipadx=102)
 
 update_item = Button(root, text="Edit an item", command=update_items)
 update_item.grid(row=12, column=1, columnspan=1, pady=5, padx=10, ipadx=70)
+
+add_photo = Button(root, text="Add a food photo", command=add_photos)
+add_photo.grid(row=14, column=0, columnspan=2, pady=10, padx=10, ipadx=90)
 
 
 #########################  Entries  #################################
